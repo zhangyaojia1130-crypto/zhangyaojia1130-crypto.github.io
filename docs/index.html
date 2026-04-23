@@ -1,1 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DerbySoft AI Voice Agent ROI Simulator</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #00131c;
+        --aqua: #00ffff;
+        --purple: #8800ff;
+        --fuchsia: #ff00dd;
+        --border: rgba(0, 19, 28, 0.1);
+        --muted: rgba(0, 19, 28, 0.7);
+        --muted-light: rgba(0, 19, 28, 0.55);
+        --panel: rgba(0, 19, 28, 0.04);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, Arial, sans-serif;
+        text-align: left;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .page {
+        min-height: 100vh;
+        padding: 40px 24px;
+      }
+
+      .container {
+        max-width: 1240px;
+        margin: 0 auto;
+      }
+
+      .hero,
+      .panel,
+      .metric-card,
+      .summary-row,
+      .note-card,
+      .field-shell {
+        background: #ffffff;
+        border: 1px solid var(--border);
+      }
+
+      .hero-gradient,
+      .bar-fill {
+        background: linear-gradient(135deg, var(--aqua) 0%, var(--purple) 52%, var(--fuchsia) 100%);
+      }
+
+      .hero {
+        overflow: hidden;
+      }
+
+      .hero-gradient {
+        height: 6px;
+        width: 100%;
+      }
+
+      .hero-body {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 32px;
+        padding: 40px;
+      }
+
+      .brand-lockup {
+        display: inline-flex;
+        min-width: 120px;
+        min-height: 48px;
+        padding: 14px 16px;
+        border: 1px solid rgba(0, 19, 28, 0.14);
+        margin-bottom: 20px;
+      }
+
+      .brand-overline {
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        color: rgba(0, 19, 28, 0.6);
+        line-height: 150%;
+      }
+
+      .brand-title {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 150%;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 110%;
+        max-width: 760px;
+      }
+
+      h2 {
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 125%;
+      }
+
+      h3 {
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 125%;
+      }
+
+      h4,
+      .field-label {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 125%;
+      }
+
+      .body-copy {
+        margin-top: 16px;
+        max-width: 720px;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 150%;
+        color: var(--muted);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 20px;
+        border: 1px solid var(--text);
+        background: #ffffff;
+        color: var(--text);
+        cursor: pointer;
+        transition: background 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 150%;
+      }
+
+      .btn-dark {
+        background: var(--text);
+        color: #ffffff;
+      }
+
+      .btn-dark:hover {
+        opacity: 0.92;
+      }
+
+      .btn-accent {
+        border-color: var(--purple);
+      }
+
+      .btn-accent:hover,
+      .btn-aqua:hover {
+        background: rgba(136, 0, 255, 0.05);
+      }
+
+      .btn-aqua {
+        border-color: var(--aqua);
+      }
+
+      .stats-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .metric-card {
+        padding: 20px;
+      }
+
+      .metric-label {
+        font-size: 12px;
+        line-height: 150%;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted-light);
+      }
+
+      .metric-value {
+        margin-top: 8px;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 125%;
+      }
+
+      .metric-hint {
+        margin-top: 8px;
+        font-size: 14px;
+        line-height: 150%;
+        color: var(--muted-light);
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 32px;
+        margin-top: 32px;
+      }
+
+      .panel {
+        padding: 32px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .section-subcopy {
+        margin-top: 8px;
+        font-size: 16px;
+        line-height: 150%;
+        color: var(--muted);
+        max-width: 640px;
+      }
+
+      .slider-group {
+        display: grid;
+        gap: 24px;
+        margin-top: 24px;
+      }
+
+      .slider-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .value-chip {
+        padding: 8px 12px;
+        border: 1px solid rgba(0, 19, 28, 0.12);
+        font-size: 14px;
+        line-height: 150%;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        margin-top: 12px;
+        appearance: none;
+        height: 8px;
+        background: rgba(0, 19, 28, 0.1);
+        outline: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--purple);
+        background: #ffffff;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--purple);
+        background: #ffffff;
+        cursor: pointer;
+      }
+
+      .range-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-size: 12px;
+        line-height: 150%;
+        color: rgba(0, 19, 28, 0.5);
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+
+      .field-label-small {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 125%;
+      }
+
+      .field-shell {
+        display: flex;
+        align-items: center;
+        padding: 14px 12px;
+      }
+
+      .field-prefix,
+      .field-suffix {
+        font-size: 16px;
+        line-height: 150%;
+        color: var(--muted-light);
+      }
+
+      .field-prefix {
+        margin-right: 4px;
+      }
+
+      .field-suffix {
+        margin-left: 4px;
+      }
+
+      .field-shell input[type="number"] {
+        width: 100%;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: var(--text);
+        font-size: 16px;
+        line-height: 150%;
+      }
+
+      .stack {
+        display: grid;
+        gap: 32px;
+      }
+
+      .summary-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .summary-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 16px;
+      }
+
+      .summary-row.highlight {
+        border-color: rgba(136, 0, 255, 0.35);
+        background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(136, 0, 255, 0.08) 52%, rgba(255, 0, 221, 0.1) 100%);
+      }
+
+      .summary-label {
+        font-size: 14px;
+        line-height: 150%;
+        color: rgba(0, 19, 28, 0.75);
+      }
+
+      .summary-value {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 125%;
+      }
+
+      .snapshot-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .snapshot-icon {
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--aqua);
+        background: linear-gradient(135deg, rgba(0, 255, 255, 0.15) 0%, rgba(136, 0, 255, 0.1) 52%, rgba(255, 0, 221, 0.15) 100%);
+      }
+
+      .bars {
+        display: grid;
+        gap: 20px;
+        margin-top: 24px;
+      }
+
+      .bar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        line-height: 150%;
+      }
+
+      .bar-track {
+        width: 100%;
+        height: 12px;
+        overflow: hidden;
+        background: rgba(0, 19, 28, 0.08);
+      }
+
+      .bar-fill {
+        height: 100%;
+      }
+
+      .note-card {
+        padding: 24px 32px;
+      }
+
+      .note-copy {
+        margin-top: 12px;
+        font-size: 16px;
+        line-height: 150%;
+        color: var(--muted);
+      }
+
+      @media (max-width: 1080px) {
+        .hero-body,
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .page {
+          padding: 20px 16px;
+        }
+
+        .hero-body,
+        .panel,
+        .note-card {
+          padding: 24px;
+        }
+
+        .field-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-head,
+        .slider-top,
+        .summary-row,
+        .snapshot-head,
+        .bar-top {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="container">
+        <header class="hero">
+          <div class="hero-gradient"></div>
+          <div class="hero-body">
+            <div>
+              <div class="brand-lockup">
+                <div>
+                  <div class="brand-overline">DERBYSOFT</div>
+                  <div class="brand-title">AI Voice Agent ROI Simulator</div>
+                </div>
+              </div>
+              <h1>Evaluate the business impact of AI voice automation across travel commerce operations.</h1>
+              <p class="body-copy">
+                Model operational savings, incremental revenue, and payback period using a clean, executive-ready
+                simulator aligned to DerbySoft’s corporate visual language.
+              </p>
+              <div class="hero-actions">
+                <button class="btn btn-dark" type="button">Export business case</button>
+                <button class="btn btn-accent" type="button">Compare scenarios</button>
+              </div>
+            </div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+          </div>
+        </header>
+
+        <main class="main-grid">
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h2>Operational assumptions</h2>
+                <p class="section-subcopy">
+                  Adjust the primary drivers to reflect contact center volume, automation performance, and platform cost.
+                </p>
+              </div>
+              <button class="btn btn-aqua" type="button" id="resetBtn">Reset inputs</button>
+            </div>
+
+            <div class="slider-group" id="sliderGroup"></div>
+            <div class="field-grid" id="fieldGrid"></div>
+          </section>
+
+          <section class="stack">
+            <div class="panel">
+              <h3>Value summary</h3>
+              <p class="section-subcopy">
+                The simulator combines labor efficiency and revenue contribution into a transparent financial view.
+              </p>
+              <div class="summary-list" id="summaryList"></div>
+            </div>
+
+            <div class="panel">
+              <div class="snapshot-head">
+                <div>
+                  <h3>Scenario snapshot</h3>
+                  <p class="section-subcopy">
+                    A simplified distribution of where value is created in the current scenario.
+                  </p>
+                </div>
+                <div class="snapshot-icon" aria-hidden="true"></div>
+              </div>
+              <div class="bars" id="bars"></div>
+            </div>
+
+            <div class="note-card">
+              <h4>Recommended interpretation</h4>
+              <p class="note-copy">
+                Stronger automation and containment increase labor savings, while qualified-call conversion lift improves
+                revenue contribution. Use the model to align commercial, operations, and finance stakeholders on a shared
+                ROI baseline.
+              </p>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const defaults = {
+        monthlyCalls: 18000,
+        avgHandleTime: 6.5,
+        agentHourlyCost: 18,
+        automationRate: 42,
+        containmentRate: 78,
+        implementationCost: 45000,
+        monthlyPlatformCost: 9500,
+        csatLift: 8,
+        conversionLift: 3.2,
+        revenuePerConvertedBooking: 28,
+        qualifiedCallsPerMonth: 3200,
+      };
+
+      const state = { ...defaults };
+
+      const sliderFields = [
+        { key: 'monthlyCalls', label: 'Monthly inbound calls', min: 1000, max: 50000, step: 500, suffix: 'calls' },
+        { key: 'avgHandleTime', label: 'Average handle time', min: 1, max: 15, step: 0.5, suffix: 'minutes' },
+        { key: 'agentHourlyCost', label: 'Agent hourly cost', min: 8, max: 40, step: 1, prefix: '$' },
+        { key: 'automationRate', label: 'AI automation rate', min: 5, max: 95, step: 1, suffix: '%' },
+        { key: 'containmentRate', label: 'Containment rate', min: 10, max: 95, step: 1, suffix: '%' },
+        { key: 'monthlyPlatformCost', label: 'Monthly platform cost', min: 1000, max: 25000, step: 250, prefix: '$' },
+      ];
+
+      const metricFields = [
+        { key: 'implementationCost', label: 'Implementation cost', prefix: '$', step: '1' },
+        { key: 'qualifiedCallsPerMonth', label: 'Qualified calls / month', step: '1' },
+        { key: 'revenuePerConvertedBooking', label: 'Revenue per converted booking', prefix: '$', step: '1' },
+        { key: 'conversionLift', label: 'Conversion lift', suffix: '%', step: '0.1' },
+      ];
+
+      const statsGrid = document.getElementById('statsGrid');
+      const sliderGroup = document.getElementById('sliderGroup');
+      const fieldGrid = document.getElementById('fieldGrid');
+      const summaryList = document.getElementById('summaryList');
+      const bars = document.getElementById('bars');
+      const resetBtn = document.getElementById('resetBtn');
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 0,
+        }).format(value);
+      }
+
+      function formatNumber(value) {
+        return new Intl.NumberFormat('en-US', {
+          maximumFractionDigits: 0,
+        }).format(value);
+      }
+
+      function formatPercent(value) {
+        return Number(value).toFixed(1) + '%';
+      }
+
+      function calculate() {
+        const monthlyLaborHours = state.monthlyCalls * (state.avgHandleTime / 60);
+        const monthlyLaborCost = monthlyLaborHours * state.agentHourlyCost;
+        const automatedCalls = state.monthlyCalls * (state.automationRate / 100);
+        const containedCalls = automatedCalls * (state.containmentRate / 100);
+        const hoursSaved = containedCalls * (state.avgHandleTime / 60);
+        const laborSavings = hoursSaved * state.agentHourlyCost;
+        const incrementalBookings = state.qualifiedCallsPerMonth * (state.conversionLift / 100);
+        const incrementalRevenue = incrementalBookings * state.revenuePerConvertedBooking;
+        const totalMonthlyBenefit = laborSavings + incrementalRevenue;
+        const netMonthlyImpact = totalMonthlyBenefit - state.monthlyPlatformCost;
+        const annualNetBenefit = netMonthlyImpact * 12 - state.implementationCost;
+        const roi = state.implementationCost === 0 ? 0 : (annualNetBenefit / state.implementationCost) * 100;
+        const paybackMonths = netMonthlyImpact > 0 ? state.implementationCost / netMonthlyImpact : 0;
+
+        return {
+          monthlyLaborCost,
+          laborSavings,
+          incrementalRevenue,
+          totalMonthlyBenefit,
+          netMonthlyImpact,
+          annualNetBenefit,
+          roi,
+          paybackMonths,
+          containedCalls,
+        };
+      }
+
+      function renderStats(metrics) {
+        const stats = [
+          {
+            label: 'Annual Net Benefit',
+            value: formatCurrency(metrics.annualNetBenefit),
+            hint: 'After platform and implementation costs',
+          },
+          {
+            label: 'ROI',
+            value: formatPercent(metrics.roi),
+            hint: 'Year-one return on investment',
+          },
+          {
+            label: 'Payback Period',
+            value: metrics.paybackMonths > 0 ? metrics.paybackMonths.toFixed(1) + ' months' : 'N/A',
+            hint: 'Estimated recovery timeline',
+          },
+          {
+            label: 'Contained Calls / Month',
+            value: formatNumber(metrics.containedCalls),
+            hint: 'Voice interactions resolved by AI',
+          },
+        ];
+
+        statsGrid.innerHTML = stats
+          .map(
+            (item) => `
+              <div class="metric-card">
+                <div class="metric-label">${item.label}</div>
+                <div class="metric-value">${item.value}</div>
+                <div class="metric-hint">${item.hint}</div>
+              </div>
+            `
+          )
+          .join('');
+      }
+
+      function renderSliders() {
+        sliderGroup.innerHTML = sliderFields
+          .map(
+            (field) => `
+              <div>
+                <div class="slider-top">
+                  <label class="field-label" for="${field.key}">${field.label}</label>
+                  <div class="value-chip">${field.prefix || ''}${state[field.key]}${field.suffix ? ' ' + field.suffix : ''}</div>
+                </div>
+                <input
+                  id="${field.key}"
+                  data-key="${field.key}"
+                  type="range"
+                  min="${field.min}"
+                  max="${field.max}"
+                  step="${field.step}"
+                  value="${state[field.key]}"
+                />
+                <div class="range-meta">
+                  <span>${field.prefix || ''}${field.min}${field.suffix ? ' ' + field.suffix : ''}</span>
+                  <span>${field.prefix || ''}${field.max}${field.suffix ? ' ' + field.suffix : ''}</span>
+                </div>
+              </div>
+            `
+          )
+          .join('');
+
+        sliderGroup.querySelectorAll('input[type="range"]').forEach((input) => {
+          input.addEventListener('input', (event) => {
+            const key = event.target.dataset.key;
+            state[key] = Number(event.target.value);
+            render();
+          });
+        });
+      }
+
+      function renderFields() {
+        fieldGrid.innerHTML = metricFields
+          .map(
+            (field) => `
+              <label>
+                <span class="field-label-small">${field.label}</span>
+                <span class="field-shell">
+                  ${field.prefix ? `<span class="field-prefix">${field.prefix}</span>` : ''}
+                  <input
+                    type="number"
+                    data-key="${field.key}"
+                    step="${field.step}"
+                    value="${state[field.key]}"
+                  />
+                  ${field.suffix ? `<span class="field-suffix">${field.suffix}</span>` : ''}
+                </span>
+              </label>
+            `
+          )
+          .join('');
+
+        fieldGrid.querySelectorAll('input[type="number"]').forEach((input) => {
+          input.addEventListener('input', (event) => {
+            const key = event.target.dataset.key;
+            state[key] = Number(event.target.value || 0);
+            render();
+          });
+        });
+      }
+
+      function renderSummary(metrics) {
+        const rows = [
+          ['Current monthly labor cost', formatCurrency(metrics.monthlyLaborCost), false],
+          ['Monthly labor savings', formatCurrency(metrics.laborSavings), false],
+          ['Monthly incremental revenue', formatCurrency(metrics.incrementalRevenue), false],
+          ['Monthly total benefit', formatCurrency(metrics.totalMonthlyBenefit), false],
+          ['Monthly net impact', formatCurrency(metrics.netMonthlyImpact), true],
+          ['CSAT uplift assumption', formatPercent(state.csatLift), false],
+        ];
+
+        summaryList.innerHTML = rows
+          .map(
+            ([label, value, highlight]) => `
+              <div class="summary-row${highlight ? ' highlight' : ''}">
+                <span class="summary-label">${label}</span>
+                <span class="summary-value">${value}</span>
+              </div>
+            `
+          )
+          .join('');
+      }
+
+      function renderBars(metrics) {
+        const definitions = [
+          {
+            label: 'Labor savings contribution',
+            value: metrics.laborSavings,
+            total: metrics.totalMonthlyBenefit || 1,
+          },
+          {
+            label: 'Revenue contribution',
+            value: metrics.incrementalRevenue,
+            total: metrics.totalMonthlyBenefit || 1,
+          },
+          {
+            label: 'Platform cost load',
+            value: state.monthlyPlatformCost,
+            total: Math.max(metrics.totalMonthlyBenefit, state.monthlyPlatformCost, 1),
+          },
+        ];
+
+        bars.innerHTML = definitions
+          .map((item) => {
+            const width = Math.max(6, Math.min(100, (item.value / item.total) * 100));
+            return `
+              <div>
+                <div class="bar-top">
+                  <span>${item.label}</span>
+                  <span>${formatCurrency(item.value)}</span>
+                </div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: ${width}%"></div>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      function render() {
+        const metrics = calculate();
+        renderStats(metrics);
+        renderSliders();
+        renderFields();
+        renderSummary(metrics);
+        renderBars(metrics);
+      }
+
+      resetBtn.addEventListener('click', () => {
+        Object.assign(state, defaults);
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>
 
